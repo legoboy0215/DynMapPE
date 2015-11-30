@@ -235,7 +235,7 @@ class Main extends PluginBase implements Listener{
 					$buffer = str_repeat("\0", 384);
 					for($x = 0; $x < 16; $x++){
 						for($z = 0; $z < 16; $z++){
-							$buffer{($x << 4) | $z} = $chunk->getHighestBlockAt($x, $z);
+							$buffer{($x << 4) | $z} = $chunk->getFullBlock($x, $chunk->getHighestBlockAt($x, $z), $z);
 							$offset = 0x100 | ($x << 3) | ($z >> 1);
 							$andMask = ($z & 1)?"\x0F":"\xF0";
 							$damage = $chunk->getHighestBlockAt($x, $z);
