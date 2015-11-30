@@ -70,9 +70,8 @@ class Main extends PluginBase implements Listener{
 		// if($sender instanceof Player || $sender instanceof ConsoleCommandSender){ // commands for both console and player
 		switch($command->getName()){
 			case "dynmaprefresh":
-				{
 					$sender->sendMessage($this->getTranslation("Will update dynmap"));
-					if($sender->hasPermission("dynmap.cmd")){
+					if(($sender->hasPermission("dynmap.cmd"))){
 						$this->saveFiles();
 						$sender->sendMessage($this->getTranslation("Successfully updated"));
 						return true;
@@ -80,14 +79,12 @@ class Main extends PluginBase implements Listener{
 					else{
 						$sender->sendMessage($this->getTranslation("no-permission"));
 					}
-					return false;
 				}
+				break;
 			default:
-				{
 					$sender->sendMessage($this->getTranslation("Fail.."));
 					return false;
-				}
-			// }
+			}
 		}
 	}
 
