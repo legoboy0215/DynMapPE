@@ -69,7 +69,7 @@ class Main extends PluginBase implements Listener{
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args){
 		// if($sender instanceof Player || $sender instanceof ConsoleCommandSender){ // commands for both console and player
 		switch($command->getName()){
-			case "dynmaprefresh":{
+			case "dynmap":{
 				$sender->sendMessage($this->getTranslation("Will update dynmap"));
 				if(($sender->hasPermission("dynmap.cmd"))){
 					$this->saveFiles();
@@ -226,8 +226,8 @@ class Main extends PluginBase implements Listener{
 
 	public function saveFiles(){
 		foreach($this->getServer()->getLevels() as $level){
-			@mkdir($this->getDataFolder() . "/data/" . $level->getName());
-			$this->getServer()->broadcastMessage($this->getDataFolder() . "/data/" . $level->getName());
+			@mkdir($this->getDataFolder() . "data/" . $level->getName());
+			$this->getServer()->broadcastMessage($this->getDataFolder() . "data/" . $level->getName());
 			foreach($level->getChunks() as $chunk){
 				if($chunk->isLoaded()){
 					$chunkx = $chunk->getX();
@@ -244,8 +244,8 @@ class Main extends PluginBase implements Listener{
 							$buffer{$offset} |= $orMask;
 						}
 					}
-					$this->getServer()->broadcastMessage($this->getDataFolder() . "/data/" . $level->getName() . " / " . $chunkx . ":" . $chunkz . ".dat");
-					file_put_contents($this->getDataFolder() . "/data/" . $level->getName() . " / " . $chunkx . ":" . $chunkz . ".dat", $buffer);
+					$this->getServer()->broadcastMessage($this->getDataFolder() . "data/" . $level->getName() . " / " . $chunkx . "_" . $chunkz . ".dat");
+					file_put_contents($this->getDataFolder() . "data/" . $level->getName() . " / " . $chunkx . "_" . $chunkz . ".dat", $buffer);
 				}
 			}
 		}
