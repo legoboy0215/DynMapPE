@@ -57,7 +57,7 @@ class Main extends PluginBase implements Listener{
 		$this->saveResource("messages.yml", false);
 		$this->reloadConfig();
 		$this->getConfig()->save();
-		mkdir($this->getDataFolder() . "/data/");
+		@mkdir($this->getDataFolder() . "/data/");
 		$this->messages = new Config($this->getDataFolder() . "messages.yml", Config::YAML);
 	}
 
