@@ -22,6 +22,8 @@ use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\math\Vector3;
+use pocketmine\block\Block;
 
 class Main extends PluginBase implements Listener{
 	public $database;
@@ -69,17 +71,18 @@ class Main extends PluginBase implements Listener{
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args){
 		// if($sender instanceof Player || $sender instanceof ConsoleCommandSender){ // commands for both console and player
 		switch($command->getName()){
-			case "dynmap":{
-				$sender->sendMessage($this->getTranslation("Will update dynmap"));
-				if(($sender->hasPermission("dynmap.cmd"))){
-					$this->saveFiles();
-					$sender->sendMessage($this->getTranslation("Successfully updated"));
-					return true;
+			case "dynmap":
+				{
+					$sender->sendMessage($this->getTranslation("Will update dynmap"));
+					if(($sender->hasPermission("dynmap.cmd"))){
+						$this->saveFiles();
+						$sender->sendMessage($this->getTranslation("Successfully updated"));
+						return true;
+					}
+					else{
+						$sender->sendMessage($this->getTranslation("no-permission"));
+					}
 				}
-				else{
-					$sender->sendMessage($this->getTranslation("no-permission"));
-				}
-			}
 			default:
 				$sender->sendMessage($this->getTranslation("Fail.."));
 				return false;
@@ -232,20 +235,22 @@ class Main extends PluginBase implements Listener{
 				if($chunk->isLoaded()){
 					$chunkx = $chunk->getX();
 					$chunkz = $chunk->getZ();
-					$buffer = str_repeat("\0", 384);
+					$this->getLogger()->info($chunkx);
+					$this->getLogger()->info($chunkz);
+					$buffer = [];
 					for($x = 0; $x < 16; $x++){
 						for($z = 0; $z < 16; $z++){
-							$buffer{($x << 4) | $z} = $chunk->getFullBlock($x, $chunk->getHighestBlockAt($x, $z), $z);
-							$offset = 0x100 | ($x << 3) | ($z >> 1);
-							$andMask = ($z & 1)?"\x0F":"\xF0";
-							$damage = $chunk->getHighestBlockAt($x, $z);
-							$orMask = ($z & 1)?chr($damage << 4):chr($damage & 0x0F);
-							$buffer{$offset} &= $andMask;
-							$buffer{$offset} |= $orMask;
+							$y = $level->getHighestBlockAt($x + ($chunkx * 16), $z + ($chunkz * 16));
+							// $y = $chunk->getHighestBlockAt($x, $z);
+							while($level->getBlock(new Vector3($x, $y, $z)) === Block::AIR && $y > 0){
+								$y--;
+							}
+							$block = $level->getBlock(new Vector3($x + ($chunkx * 16), $y, $z + ($chunkz * 16)));
+							$buffer[] = $block->getId() . ":" . $block->getDamage();
 						}
 					}
-					$this->getServer()->broadcastMessage($this->getDataFolder() . "data/" . $level->getName() . " / " . $chunkx . "_" . $chunkz . ".dat");
-					file_put_contents($this->getDataFolder() . "data/" . $level->getName() . " / " . $chunkx . "_" . $chunkz . ".dat", $buffer);
+					$this->getServer()->broadcastMessage($this->getDataFolder() . "data/" . $level->getName() . "/" . $chunkx . "_" . $chunkz . ".dat");
+					file_put_contents($this->getDataFolder() . "data/" . $level->getName() . "/" . $chunkx . "_" . $chunkz . ".dat", implode("|", $buffer));
 				}
 			}
 		}
