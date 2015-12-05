@@ -70,22 +70,21 @@ class Main extends PluginBase implements Listener{
 	/* input handling */
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args){
 		// if($sender instanceof Player || $sender instanceof ConsoleCommandSender){ // commands for both console and player
-		switch($command->getName()){
+		switch(strtolower($command->getName())){
 			case "dynmap":
-				{
-					$sender->sendMessage($this->getTranslation("Will update dynmap"));
-					if(($sender->hasPermission("dynmap.cmd"))){
-						$this->saveFiles();
-						$sender->sendMessage($this->getTranslation("Successfully updated"));
-						return true;
-					}
-					else{
-						$sender->sendMessage($this->getTranslation("no-permission"));
-					}
+				$sender->sendMessage($this->getTranslation("Will update dynmap"));
+				if(($sender->hasPermission("dynmap.cmd"))){
+					$this->saveFiles();
+					$sender->sendMessage($this->getTranslation("Successfully updated"));
+					return true;
+				}else{
+					$sender->sendMessage($this->getTranslation("no-permission"));
 				}
+				break;
 			default:
 				$sender->sendMessage($this->getTranslation("Fail.."));
 				return false;
+				break;
 		}
 	}
 
